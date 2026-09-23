@@ -1,0 +1,17 @@
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; align-content: center; gap: 16px; padding: 24px;
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; color: #1b1f29;
+  background: linear-gradient(160deg, #00205b 0%, #0b3a8c 60%, #e35205 160%); }
+.card { width: min(420px, 100%); background: #fff; border-radius: 14px; padding: 32px 34px; box-shadow: 0 20px 50px rgba(0, 0, 0, .3); }
+.wordmark { text-align: center; font-family: Georgia, "Times New Roman", serif; color: #00205b; margin-bottom: 18px; }
+.w1 { display: block; font-size: 28px; letter-spacing: .12em; font-weight: 700; }
+.w2 { display: block; font-size: 12px; letter-spacing: .5em; color: #e35205; }
+h1 { font-size: 20px; margin: 0 0 4px; }
+.sub { margin: 0 0 18px; color: #5f6878; font-size: 14px; }
+label { display: block; font-weight: 600; font-size: 13px; margin: 12px 0 4px; }
+input { width: 100%; padding: 10px 12px; border: 1px solid #c9ced8; border-radius: 8px; font: inherit; }
+button { width: 100%; margin-top: 20px; padding: 11px; border: 0; border-radius: 8px; background: #00205b; color: #fff; font: 700 15px system-ui, sans-serif; cursor: pointer; }
+.help { display: block; text-align: center; margin-top: 14px; font-size: 13px; color: #1a56db; }
+.notice { margin-top: 18px; background: #fdecec; border: 1px solid #f3b5b5; border-radius: 10px; padding: 12px 14px; color: #7a1010; font-size: 14px; }
+.notice p { margin: 6px 0 0; }
+footer { color: rgba(255, 255, 255, .7); font-size: 12px; text-align: center; }

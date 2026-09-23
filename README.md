@@ -73,6 +73,13 @@ npm test
 
 This runs `node --test` over the extension's pure logic in `extension/src/lib` and the server services.
 
+## Before a demo
+
+1. Run `npm run dev`, then `npm run db:reset` to clear old reports.
+2. In both Chrome profiles, click reload on the WaveGuard card in `chrome://extensions`. Chrome keeps running the old background worker until you do. The side panel shows a red notice if a profile is out of date.
+3. Click the WaveGuard icon in each profile to open the side panel. The two "Reporting as" IDs should differ.
+4. Open the IT dashboard at http://localhost:5180 next to the browsers. The dot at the top right should say Live.
+
 ## Demo script
 
 1. Open the mock inbox. The impersonation email is flagged inline with an explanation.

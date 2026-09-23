@@ -3,31 +3,45 @@ import { hashesForUrl, prefixOf } from '../lib/hash.js';
 import { api } from './api.js';
 
 const RANK = { clean: 0, warn: 1, block: 2 };
+const MAX_PREFIXES_PER_REQUEST = 50;
+
+// Full hashes in → Map(fullHash → { hash, kind, status, report_count }) for real matches.
+// Throws if the server can't be reached; callers decide whether to fail open.
+export async function lookupHashes(hashes) {
+  const wanted = new Set(hashes.filter(Boolean));
+  const prefixes = [...new Set([...wanted].map(prefixOf))];
+  const found = new Map();
+  for (let i = 0; i < prefixes.length; i += MAX_PREFIXES_PER_REQUEST) {
+    const body = { prefixes: prefixes.slice(i, i + MAX_PREFIXES_PER_REQUEST) };
+    const { matches } = await api('/api/check', { method: 'POST', body });
+    for (const m of matches) if (wanted.has(m.hash)) found.set(m.hash, m); // ignore prefix collisions
+  }
+  return found;
+}
+
+// Most severe of several matches → 'clean' | 'warn' | 'block'.
+export function worstStatus(matches) {
+  return matches.reduce((worst, m) => ((RANK[m?.status] ?? 0) > RANK[worst] ? m.status : worst), 'clean');
+}
 
 // → { status: 'clean' | 'warn' | 'block' | 'unknown', canonical, hash?, kind?, reportCount? }
 export async function checkUrl(url) {
   const h = await hashesForUrl(url);
   if (!h) return { status: 'clean' };
 
-  let matches;
+  let found;
   try {
-    const prefixes = [...new Set([prefixOf(h.urlHash), prefixOf(h.domainHash)])];
-    ({ matches } = await api('/api/check', { method: 'POST', body: { prefixes } }));
+    found = await lookupHashes([h.urlHash, h.domainHash]);
   } catch (err) {
     return { status: 'unknown', canonical: h.canonical, error: err.message }; // fail open
   }
 
-  let best = { status: 'clean', canonical: h.canonical };
-  for (const m of matches) {
-    if (m.hash !== h.urlHash && m.hash !== h.domainHash) continue; // prefix collision, not a match
-    const reportCount = Math.max(m.report_count ?? 0, best.reportCount ?? 0);
-    if ((RANK[m.status] ?? 0) > RANK[best.status]) {
-      best = { status: m.status, canonical: h.canonical, hash: m.hash, kind: m.kind, reportCount };
-    } else {
-      best.reportCount = reportCount;
-    }
-  }
-  return best;
+  const matches = [found.get(h.urlHash), found.get(h.domainHash)].filter(Boolean);
+  const status = worstStatus(matches);
+  if (status === 'clean') return { status, canonical: h.canonical };
+  const top = matches.find((m) => m.status === status);
+  const reportCount = Math.max(...matches.map((m) => m.report_count ?? 0));
+  return { status, canonical: h.canonical, hash: top.hash, kind: top.kind, reportCount };
 }
 
 export function warningPageUrl({ url, status, back }) {

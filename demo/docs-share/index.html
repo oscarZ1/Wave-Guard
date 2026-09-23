@@ -1,5 +1,33 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><title>Docs share page (placeholder, filled in Milestone 4)</title></head>
-<body style="font-family:system-ui;padding:24px"><h1>Docs share page (placeholder, filled in Milestone 4)</h1></body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shared document</title>
+  <style>
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #f1f3f4;
+      font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; color: #202124; }
+    .card { width: min(460px, 92vw); background: #fff; border-radius: 12px; padding: 30px; box-shadow: 0 2px 10px rgba(0, 0, 0, .12); text-align: center; }
+    .file { font-size: 44px; }
+    h1 { font-size: 19px; margin: 8px 0; }
+    p { color: #5f6368; margin: 6px 0 18px; }
+    button { padding: 10px 22px; border: 0; border-radius: 6px; background: #1a73e8; color: #fff; font: 600 15px system-ui, sans-serif; cursor: pointer; }
+    .notice { margin-top: 16px; color: #a01414; font-size: 14px; }
+    footer { margin-top: 18px; font-size: 12px; color: #9aa0a6; }
+  </style>
+</head>
+<body>
+<!-- DEMO ONLY: fake "shared document" page for the WaveGuard demo. It has no form and sends nothing. -->
+  <main class="card">
+    <div class="file">📄</div>
+    <h1>Spring 2027 Tuition Adjustment.pdf</h1>
+    <p>This file is protected. Verify your Pepperdine account to view it.</p>
+    <button id="verify" type="button">Verify and open</button>
+    <div id="notice" class="notice" hidden>This was a phishing demo. Nothing was sent.</div>
+    <footer>WaveGuard hackathon demo page.</footer>
+  </main>
+  <script>
+    document.getElementById('verify').addEventListener('click', () => { document.getElementById('notice').hidden = false; });
+  </script>
+</body>
 </html>

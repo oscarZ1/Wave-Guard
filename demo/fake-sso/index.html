@@ -1,5 +1,50 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><title>Fake SSO page (placeholder, filled in Milestone 4)</title></head>
-<body style="font-family:system-ui;padding:24px"><h1>Fake SSO page (placeholder, filled in Milestone 4)</h1></body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in · Pepperdine University</title>
+  <link rel="stylesheet" href="sso.css">
+</head>
+<body>
+<!--
+  DEMO ONLY: this form never submits or stores anything.
+  It is a fake "Pepperdine sign-in" page for the WaveGuard hackathon demo, served only
+  by the local demo server. The form has no action, the inputs have no name attributes
+  (so the browser has nothing to send), and the submit handler below calls
+  preventDefault() and shows a notice instead. No script on this page reads the fields.
+-->
+  <main class="card">
+    <div class="wordmark">
+      <span class="w1">PEPPERDINE</span>
+      <span class="w2">UNIVERSITY</span>
+    </div>
+    <h1>Sign in to continue</h1>
+    <p class="sub">Use your Pepperdine Network ID to access Courses, WaveNet and email.</p>
+
+    <form id="signin" novalidate autocomplete="off">
+      <label for="user">Network ID</label>
+      <input id="user" type="text" autocomplete="off" placeholder="first.last" spellcheck="false">
+      <label for="pass">Password</label>
+      <input id="pass" type="password" autocomplete="off" placeholder="••••••••">
+      <button type="submit">Sign in</button>
+    </form>
+    <a class="help" href="#" onclick="return false">Forgot your password?</a>
+
+    <div id="notice" class="notice" hidden>
+      <strong>This was a phishing demo. Nothing was sent.</strong>
+      <p>On a real phishing site, the password you just typed would now belong to an attacker. WaveGuard warns you before you get here.</p>
+    </div>
+  </main>
+  <footer>WaveGuard hackathon demo page. This form sends nothing.</footer>
+  <script>
+    // Never read, send or store the fields. Just show the demo notice.
+    document.getElementById('signin').addEventListener('submit', (event) => {
+      event.preventDefault();
+      document.getElementById('user').value = '';
+      document.getElementById('pass').value = '';
+      document.getElementById('notice').hidden = false;
+    });
+  </script>
+</body>
 </html>

@@ -1,5 +1,148 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><title>Mock inbox (placeholder, filled in Milestone 4)</title></head>
-<body style="font-family:system-ui;padding:24px"><h1>Mock inbox (placeholder, filled in Milestone 4)</h1></body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inbox · WaveMail</title>
+  <link rel="stylesheet" href="inbox.css">
+</head>
+<body>
+<!--
+  WaveGuard demo inbox. Every person, message and address here is FICTIONAL.
+  The .test / .localhost links point only at the local demo server.
+-->
+<div class="app" data-mock-inbox>
+  <header class="topbar">
+    <div class="logo"><span aria-hidden="true">🌊</span> WaveMail</div>
+    <input class="search" type="search" placeholder="Search mail" aria-label="Search mail">
+    <div class="me" title="Demo account">student@pepperdine.edu</div>
+  </header>
+
+  <aside class="folders">
+    <button class="compose" type="button">✏️ Compose</button>
+    <nav>
+      <a class="active" href="#">📥 Inbox <span class="count">4</span></a>
+      <a href="#">⭐ Starred</a>
+      <a href="#">📤 Sent</a>
+      <a href="#">📝 Drafts</a>
+      <a href="#">🗑️ Junk</a>
+    </nav>
+    <p class="demo-note">Demo inbox for WaveGuard. All people, messages and addresses are fictional.</p>
+  </aside>
+
+  <section class="list" aria-label="Messages">
+    <button class="row unread" data-list-id="dean" type="button">
+      <span class="row-from">Dean Alex Rivera</span>
+      <time>10:48 AM</time>
+      <span class="row-subject">Quick favor: are you on campus today?</span>
+      <span class="row-snippet">Are you on campus today? I'm stuck in back-to-back meetings…</span>
+    </button>
+    <button class="row unread" data-list-id="it" type="button">
+      <span class="row-from">Pepperdine IT Security</span>
+      <time>10:21 AM</time>
+      <span class="row-subject">Action required: your Pepperdine password expires today</span>
+      <span class="row-snippet">Our records show your network password expires today at 5:00 PM…</span>
+    </button>
+    <button class="row unread" data-list-id="drive" type="button">
+      <span class="row-from">Google Drive</span>
+      <time>9:37 AM</time>
+      <span class="row-subject">Elena Vasquez shared "Spring 2027 Tuition Adjustment.pdf" with you</span>
+      <span class="row-snippet">Elena Vasquez has shared a file with you…</span>
+    </button>
+    <button class="row" data-list-id="library" type="button">
+      <span class="row-from">Payson Library</span>
+      <time>Yesterday</time>
+      <span class="row-subject">Your study room reservation is confirmed</span>
+      <span class="row-snippet">Study Room 214, Thursday 2:00 to 4:00 PM…</span>
+    </button>
+  </section>
+
+  <main class="reader">
+    <!-- 1. Impersonation: a directory name sent from a personal gmail.com address. -->
+    <article data-message-id="dean" data-sender-name="Dean Alex Rivera" data-sender-email="dean.alex.rivera.office@gmail.com">
+      <h1 class="subject">Quick favor: are you on campus today?</h1>
+      <div class="from">
+        <span class="avatar" style="background:#6b4bd8">AR</span>
+        <div>
+          <span class="sender-name">Dean Alex Rivera</span>
+          <span class="sender-email">&lt;dean.alex.rivera.office@gmail.com&gt;</span>
+          <div class="to">to me</div>
+        </div>
+        <time>10:48 AM</time>
+      </div>
+      <div class="body">
+        <p>Hi,</p>
+        <p>Are you on campus today? I'm stuck in back-to-back meetings with the Board and can't take calls.</p>
+        <p>I need a quick favor for a student appreciation event this afternoon. Could you pick up six $100 Apple gift cards from the campus store? I'll reimburse you by the end of the day.</p>
+        <p>Please reply with your cell number so I can text you the details. Keep this between us for now, it's a surprise.</p>
+        <p>Thanks,<br>Dean Alex Rivera<br>Dean of Students</p>
+        <p class="sig">Sent from my iPhone</p>
+      </div>
+    </article>
+
+    <!-- 2. Fake IT notice: look-alike sender domain (pepperdlne.edu) and a link to the fake sign-in page. -->
+    <article data-message-id="it" data-sender-name="Pepperdine IT Security" data-sender-email="it-security@pepperdlne.edu" hidden>
+      <h1 class="subject">Action required: your Pepperdine password expires today</h1>
+      <div class="from">
+        <span class="avatar" style="background:#00205b">IT</span>
+        <div>
+          <span class="sender-name">Pepperdine IT Security</span>
+          <span class="sender-email">&lt;it-security@pepperdlne.edu&gt;</span>
+          <div class="to">to me</div>
+        </div>
+        <time>10:21 AM</time>
+      </div>
+      <div class="body">
+        <p>Dear Student,</p>
+        <p>Our records show your Pepperdine network password <strong>expires today at 5:00 PM</strong>. After that you will lose access to Courses (Canvas), WaveNet and your university email.</p>
+        <p>To keep your current password, sign in and confirm your account:</p>
+        <p><a class="button-link" href="http://pepperdine-sso-login.localhost:8082/?session=8f2a91c" data-demo-host="pepperdine-sso-login" data-demo-path="/?session=8f2a91c">Keep my current password</a></p>
+        <p>If you have already done this, you can ignore this message.</p>
+        <p>Pepperdine University<br>Information Technology</p>
+      </div>
+    </article>
+
+    <!-- 3. Link mismatch: the text shows drive.google.com, the link opens another site. -->
+    <article data-message-id="drive" data-sender-name="Google Drive" data-sender-email="drive-shares-noreply@docs-share-verify.test" hidden>
+      <h1 class="subject">Elena Vasquez shared "Spring 2027 Tuition Adjustment.pdf" with you</h1>
+      <div class="from">
+        <span class="avatar" style="background:#1a73e8">G</span>
+        <div>
+          <span class="sender-name">Google Drive</span>
+          <span class="sender-email">&lt;drive-shares-noreply@docs-share-verify.test&gt;</span>
+          <div class="to">to me</div>
+        </div>
+        <time>9:37 AM</time>
+      </div>
+      <div class="body">
+        <p>Elena Vasquez has shared a file with you:</p>
+        <p class="file">📄 Spring 2027 Tuition Adjustment.pdf</p>
+        <p>Open it here: <a href="http://docs-share-verify.localhost:8082/?file=spring-2027-tuition" data-demo-host="docs-share-verify" data-demo-path="/?file=spring-2027-tuition">https://drive.google.com/file/d/1Xy7Qspring2027/view</a></p>
+        <p class="sig">You received this email because Elena Vasquez shared a file with you.</p>
+      </div>
+    </article>
+
+    <!-- 4. Legitimate: official address from the campus directory, link text matches its target. -->
+    <article data-message-id="library" data-sender-name="Payson Library" data-sender-email="library@pepperdine.edu" hidden>
+      <h1 class="subject">Your study room reservation is confirmed</h1>
+      <div class="from">
+        <span class="avatar" style="background:#e35205">PL</span>
+        <div>
+          <span class="sender-name">Payson Library</span>
+          <span class="sender-email">&lt;library@pepperdine.edu&gt;</span>
+          <div class="to">to me</div>
+        </div>
+        <time>Yesterday</time>
+      </div>
+      <div class="body">
+        <p>Hi,</p>
+        <p>Your reservation for <strong>Study Room 214</strong> on Thursday from 2:00 to 4:00 PM is confirmed.</p>
+        <p>To change or cancel it, visit <a href="https://library.pepperdine.edu/rooms">library.pepperdine.edu/rooms</a>.</p>
+        <p>Payson Library</p>
+      </div>
+    </article>
+  </main>
+</div>
+<script src="inbox.js"></script>
+</body>
 </html>

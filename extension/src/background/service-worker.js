@@ -3,6 +3,7 @@
 // kept in module variables. The worker is killed when idle, so state goes in chrome.storage.
 import { checkUrl, warningPageUrl } from './navigation.js';
 import { submitReport } from './report.js';
+import { analyzeInbox, checkPage } from './analyze.js';
 import { postEvent } from './api.js';
 import {
   allowOnce, clearAllow, getReporterId, isAllowed, refreshKnownDomains, setReporterId,
@@ -107,6 +108,9 @@ const HANDLERS = {
     await postEvent('continued', (await hashesForUrl(url))?.urlHash);
     return {};
   },
+
+  analyzeInbox: ({ emails }) => analyzeInbox(emails),
+  checkPage: ({ url }) => checkPage(url),
 
   pageLoaded: ({ url, referrer }, sender) => {
     if (sender.tab?.id == null || sender.frameId !== 0 || !isWebUrl(url)) return null;

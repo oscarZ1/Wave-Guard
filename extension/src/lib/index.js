@@ -8,3 +8,5 @@ export { checkLookalike, maxDistanceFor } from './lookalike.js';
 export { checkBrandInWrongPlace, DEFAULT_BRANDS } from './brand.js';
 export { checkLinkMismatch, domainFromLinkText } from './link-mismatch.js';
 export { checkSenderImpersonation, nameMatches, FREE_MAIL_DOMAINS } from './sender.js';
+export { analyzeEmail } from './email-analysis.js';
+export { analyzePage } from './page-analysis.js';
