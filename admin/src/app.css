@@ -61,6 +61,9 @@ body { margin: 0; background: var(--surface); color: var(--text-primary);
 .status-block .status-dot { background: var(--status-critical); }
 .status-dismissed { color: var(--text-secondary); }
 .status-dismissed .status-dot { background: var(--status-good); }
+.status-pending { color: var(--text-secondary); }
+.status-pending .status-dot { background: transparent; border: 2px solid var(--text-muted); }
+.triage-note { color: var(--text-secondary); font-size: 12px; margin-top: 3px; }
 
 .btn { font: inherit; font-size: 13px; font-weight: 600; border-radius: 8px; padding: 6px 12px; margin-left: 6px; cursor: pointer;
   border: 1px solid #c9c8c2; background: #fff; color: var(--text-primary); }

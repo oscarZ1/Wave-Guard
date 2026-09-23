@@ -1,5 +1,6 @@
 // Status always ships as icon + label + colored dot, so color never carries meaning alone.
 const STATUS = {
+  pending: { icon: '⏸', label: 'Held for review', hint: 'Only IT can see this. Nobody is warned yet.' },
   warn: { icon: '⚠', label: 'Warning users', hint: 'Reported by users, waiting for IT review' },
   block: { icon: '⛔', label: 'Blocked', hint: 'Full block page for everyone' },
   dismissed: { icon: '✓', label: 'Dismissed', hint: 'IT decided this is safe; never warns' },

@@ -44,17 +44,21 @@ CREATE TABLE reports (
 CREATE INDEX reports_url_hash_idx    ON reports (url_hash);
 CREATE INDEX reports_domain_hash_idx ON reports (domain_hash);
 CREATE INDEX reports_sender_idx      ON reports (lower(sender_email));
+CREATE INDEX reports_reporter_idx    ON reports (reporter_id, created_at);
 
 -- One row per reported URL, registrable domain, or sender address.
 -- label/domain are plaintext copies of data already in reports, for the dashboard.
+-- status 'pending' = held for IT review; only the dashboard sees it (services/triage.js).
+-- triage_note says in plain language why an entry is held, warning or blocked.
 CREATE TABLE blocklist (
   id           serial PRIMARY KEY,
   hash         char(64)    NOT NULL UNIQUE,
   kind         text        NOT NULL CHECK (kind IN ('url', 'domain', 'sender')),
-  status       text        NOT NULL CHECK (status IN ('warn', 'block', 'dismissed')),
+  status       text        NOT NULL CHECK (status IN ('pending', 'warn', 'block', 'dismissed')),
   label        text        NOT NULL,
   domain       text,
   report_count integer     NOT NULL DEFAULT 0,
+  triage_note  text,
   created_at   timestamptz NOT NULL DEFAULT now(),
   updated_at   timestamptz NOT NULL DEFAULT now()
 );

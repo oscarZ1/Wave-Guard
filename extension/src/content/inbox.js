@@ -79,7 +79,7 @@
     const url = flagged ? msg.links[flagged.index].href : (msg.links[0]?.href ?? null);
     ui.setStatus('Sending report…');
     try {
-      await WG.ui.send('report', {
+      const { shared = true } = await WG.ui.send('report', {
         report: {
           url,
           sender_email: msg.senderEmail || null,
@@ -88,7 +88,9 @@
           reason: `Reported from the inbox: ${analysis.findings[0]?.reason ?? 'suspicious email'}`.slice(0, 500),
         },
       });
-      ui.setStatus('Reported. Everyone at Pepperdine using WaveGuard will now be warned.');
+      ui.setStatus(shared
+        ? 'Reported. Everyone at Pepperdine using WaveGuard will now be warned.'
+        : 'Reported. Pepperdine IT will review it before anyone else is warned.');
     } catch (err) {
       ui.setStatus(`Report failed: ${err.message}`, true);
     }

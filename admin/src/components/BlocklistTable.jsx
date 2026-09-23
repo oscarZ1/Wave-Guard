@@ -26,6 +26,7 @@ export default function BlocklistTable({ items, onDecide, busyId, now, freshIds 
           <tr key={item.id} className={freshIds.has(item.id) ? 'fresh' : undefined}>
             <td>
               <div className="label">{item.label}</div>
+              {item.triage_note && <div className="triage-note">{item.triage_note}</div>}
               {item.links.length > 0 && (
                 <ul className="sublinks">
                   {item.links.map((l) => <li key={l.id}>{l.label}</li>)}
@@ -41,6 +42,11 @@ export default function BlocklistTable({ items, onDecide, busyId, now, freshIds 
               {item.status !== 'block' && (
                 <button className="btn btn-danger" disabled={busyId === item.id} onClick={() => onDecide(item, 'confirm')}>
                   Confirm phishing
+                </button>
+              )}
+              {item.status === 'pending' && (
+                <button className="btn" disabled={busyId === item.id} onClick={() => onDecide(item, 'share')}>
+                  Warn everyone
                 </button>
               )}
               {item.status !== 'dismissed' && (
