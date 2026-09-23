@@ -1,0 +1,22 @@
+{
+  "name": "waveguard",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Campus-aware phishing defense for the Pepperdine community (hackathon project)",
+  "workspaces": [
+    "extension",
+    "server",
+    "admin",
+    "demo"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n server,admin,demo -c blue,magenta,green \"npm run dev -w server\" \"npm run dev -w admin\" \"npm run dev -w demo\"",
+    "db:setup": "npm run db:setup -w server",
+    "db:reset": "npm run db:reset -w server",
+    "test": "node --test \"extension/src/lib/**/*.test.js\" \"server/src/**/*.test.js\""
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  },
+  "license": "MIT"
+}

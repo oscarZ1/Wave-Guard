@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "WaveGuard",
+  "version": "0.1.0",
+  "description": "Campus-aware phishing defense for the Pepperdine community.",
+  "permissions": ["storage", "webNavigation", "tabs", "contextMenus"],
+  "host_permissions": ["http://localhost:3000/*"],
+  "background": {
+    "service_worker": "src/background/service-worker.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "WaveGuard",
+    "default_popup": "src/popup/popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["src/content/main.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
