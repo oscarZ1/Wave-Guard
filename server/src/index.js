@@ -3,6 +3,10 @@ import cors from 'cors';
 import { pool } from './db/pool.js';
 import knownDomains from './routes/known-domains.js';
 import directory from './routes/directory.js';
+import reports from './routes/reports.js';
+import check from './routes/check.js';
+import events from './routes/events.js';
+import admin from './routes/admin.js';
 
 const app = express();
 app.use(cors());
@@ -19,6 +23,10 @@ app.get('/api/health', async (req, res) => {
 
 app.use('/api/known-domains', knownDomains);
 app.use('/api/directory', directory);
+app.use('/api/reports', reports);
+app.use('/api/check', check);
+app.use('/api/events', events);
+app.use('/api/admin', admin);
 
 app.use('/api', (req, res) => res.status(404).json({ error: 'Not found' }));
 

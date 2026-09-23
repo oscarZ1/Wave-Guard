@@ -6,8 +6,31 @@
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <h1>WaveGuard</h1>
-  <p id="server">Checking server…</p>
+  <header>
+    <span class="logo" aria-hidden="true">🌊</span>
+    <h1>WaveGuard</h1>
+  </header>
+
+  <p id="stale" class="stale" hidden>WaveGuard is out of date in this Chrome profile. Open chrome://extensions and click the reload icon on WaveGuard.</p>
+
+  <section class="site">
+    <div id="site-host" class="host">…</div>
+    <div id="site-status" class="pill">Checking…</div>
+  </section>
+
+  <button id="report" class="report" disabled>Report this page as phishing</button>
+  <p id="report-result" class="result" role="status"></p>
+
+  <details class="identity">
+    <summary>Reporting as <span id="reporter-label">…</span></summary>
+    <form id="reporter-form">
+      <input id="reporter" type="email" required placeholder="you@pepperdine.edu" autocomplete="off">
+      <button type="submit">Save</button>
+    </form>
+    <p class="hint">Demo identity. Production would use Pepperdine Google sign-in.</p>
+  </details>
+
+  <footer id="server">Checking campus server…</footer>
   <script type="module" src="popup.js"></script>
 </body>
 </html>

@@ -2,11 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>WaveGuard warning</title>
+  <link rel="stylesheet" href="warning.css">
 </head>
-<body style="font-family:system-ui;padding:24px">
-  <h1>WaveGuard warning page</h1>
-  <p>Placeholder. Filled in Milestone 3.</p>
+<body data-status="warn">
+  <main class="card">
+    <div class="badge" id="badge">⚠️ Warning</div>
+    <h1 id="title">Reported as phishing by a Pepperdine user</h1>
+    <p class="site" id="site"></p>
+    <p id="message"></p>
+    <ul class="tips">
+      <li>Don't enter your Pepperdine password, Duo codes or personal information.</li>
+      <li>If an email sent you here, report that email too.</li>
+    </ul>
+    <div class="actions">
+      <button id="back" class="primary">Go back to safety</button>
+      <button id="continue" class="secondary">Continue anyway</button>
+    </div>
+    <p class="note">WaveGuard checks sites privately: your browser sends only a short piece of a hash, never the address itself.</p>
+  </main>
   <script type="module" src="warning.js"></script>
 </body>
 </html>
