@@ -45,7 +45,18 @@
       title: analysis.title,
       reasons: analysis.findings.map((f) => f.reason),
       note: analysis.verdict === 'danger' ? "Don't reply, click links or send money until you've checked another way." : '',
-      actions: [{ label: 'Report this email', primary: true, onClick: (ui) => report(msg, analysis, ui) }],
+      actions: [
+        { label: 'Report this email', primary: true, onClick: (ui) => report(msg, analysis, ui) },
+        WG.ui.explainAction(() => ({
+          kind: 'email',
+          signals: analysis.findings.slice(0, 10).map((f) => ({ reason: f.reason, severity: f.severity })),
+          sender_name: msg.senderName || null,
+          sender_email: msg.senderEmail || null,
+          subject: msg.subject || null,
+          excerpt: msg.excerpt,
+          link_hosts: msg.links.map((l) => hostOf(l.href)).filter(Boolean),
+        })),
+      ],
     });
     adapter.insertBanner(msg, banner.host);
 
@@ -57,6 +68,10 @@
       link.style.outline = '2px dashed #c62828';
       link.style.outlineOffset = '2px';
     }
+  }
+
+  function hostOf(href) {
+    try { return new URL(href).host; } catch { return null; }
   }
 
   async function report(msg, analysis, ui) {

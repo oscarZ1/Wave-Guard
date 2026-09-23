@@ -30,7 +30,11 @@
             ui.setStatus(`Report failed: ${err.message}`, true);
           }
         },
-      }],
+      }, WG.ui.explainAction(() => ({
+        kind: 'website',
+        site: location.host,
+        signals: page.findings.map((f) => ({ reason: f.reason, severity: f.severity })),
+      }))],
     });
     Object.assign(banner.host.style, {
       position: 'fixed', top: '12px', left: '50%', transform: 'translateX(-50%)',

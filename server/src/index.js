@@ -1,3 +1,4 @@
+import './env.js'; // must stay first: loads server/.env before anything reads process.env
 import express from 'express';
 import cors from 'cors';
 import { pool } from './db/pool.js';
@@ -7,6 +8,7 @@ import reports from './routes/reports.js';
 import check from './routes/check.js';
 import events from './routes/events.js';
 import admin from './routes/admin.js';
+import explainRoute from './routes/explain.js';
 
 const app = express();
 app.use(cors());
@@ -27,6 +29,7 @@ app.use('/api/reports', reports);
 app.use('/api/check', check);
 app.use('/api/events', events);
 app.use('/api/admin', admin);
+app.use('/api/explain', explainRoute);
 
 app.use('/api', (req, res) => res.status(404).json({ error: 'Not found' }));
 

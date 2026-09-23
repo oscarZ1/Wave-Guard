@@ -30,6 +30,10 @@ npm run dev                          # starts API, admin dashboard and demo site
 
 `npm run db:reset` wipes all reports and reseeds the database. Run it before each demo.
 
+### Plain-language explanations (optional)
+
+Set `ANTHROPIC_API_KEY` in `server/.env` to turn on the "Why?" buttons' Claude explanations. `ANTHROPIC_MODEL` defaults to `claude-opus-5`. Without a key, or if the API call fails, "Why?" still works and shows WaveGuard's own reasons. The server reads `server/.env` itself, so an empty `ANTHROPIC_API_KEY` exported by your shell doesn't hide the key.
+
 | Service | URL |
 |---|---|
 | API | http://localhost:3000 (health check at `/api/health`) |

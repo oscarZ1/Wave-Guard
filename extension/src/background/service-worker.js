@@ -4,7 +4,7 @@
 import { checkUrl, warningPageUrl } from './navigation.js';
 import { submitReport } from './report.js';
 import { analyzeInbox, checkPage } from './analyze.js';
-import { postEvent } from './api.js';
+import { api, postEvent } from './api.js';
 import {
   allowOnce, clearAllow, getReporterId, isAllowed, refreshKnownDomains, setReporterId,
 } from './storage.js';
@@ -110,6 +110,8 @@ const HANDLERS = {
   },
 
   analyzeInbox: ({ emails }) => analyzeInbox(emails),
+  // Plain-language explanation (the server calls Claude; the extension never holds a key).
+  explain: ({ request }) => api('/api/explain', { method: 'POST', body: request, timeoutMs: 35_000 }),
   checkPage: ({ url }) => checkPage(url),
 
   pageLoaded: ({ url, referrer }, sender) => {

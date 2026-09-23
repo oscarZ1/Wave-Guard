@@ -1,6 +1,7 @@
 // Creates the database if needed, then loads schema.sql and seed.sql.
 // Usage: node src/db/setup.js          (skips if tables already exist)
 //        node src/db/setup.js --reset  (drops everything and reseeds)
+import '../env.js';
 import { readFile } from 'node:fs/promises';
 import pg from 'pg';
 

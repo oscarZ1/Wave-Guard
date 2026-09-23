@@ -28,6 +28,10 @@
     button:disabled { opacity: .6; cursor: default; }
     .status { font-size: 13px; color: #1a7f37; font-weight: 600; }
     .status.error { color: #b42318; }
+    .explain { margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(0, 0, 0, .15); }
+    .explain p { margin: 0 0 6px; }
+    .explain ul { margin: 0 0 6px; }
+    .explain .source { font-size: 12px; color: #6b7280; margin: 0; }
     .close { margin-left: auto; border: 0; background: transparent; font-size: 18px; line-height: 1; padding: 2px 6px; color: #6b7280; }
     .chip { display: inline-flex; align-items: center; gap: 4px; font: 600 12px/1.6 system-ui, -apple-system, sans-serif;
       border-radius: 999px; padding: 0 9px; white-space: nowrap; }
@@ -60,11 +64,27 @@
   function banner(opts) {
     const { host, root } = shadowHost();
     const status = el('span', { className: 'status', role: 'status' });
+    const details = el('div', { className: 'explain' });
+    details.hidden = true;
     const ui = {
       host,
       setStatus(text, isError = false) {
         status.textContent = text;
         status.className = isError ? 'status error' : 'status';
+      },
+      // ex: { summary, red_flags: [{ text, why }], what_to_do, source }
+      showExplanation(ex) {
+        const fromClaude = ex.source === 'claude';
+        details.replaceChildren(...[
+          el('p', { text: ex.summary }),
+          // The fallback's flags repeat the reasons already listed above, so skip them.
+          fromClaude && ex.red_flags?.length
+            ? el('ul', {}, ex.red_flags.map((f) => el('li', {}, [el('strong', { text: f.text }), f.why ? document.createTextNode(` ${f.why}`) : null])))
+            : null,
+          el('p', {}, [el('strong', { text: 'What to do: ' }), document.createTextNode(ex.what_to_do)]),
+          el('p', { className: 'source', text: fromClaude ? "Explained by Claude from WaveGuard's checks." : "From WaveGuard's checks (AI explanation unavailable right now)." }),
+        ].filter(Boolean)); // replaceChildren would render a null as the text "null"
+        details.hidden = false;
       },
     };
     const head = el('div', { className: 'head' }, [
@@ -86,6 +106,7 @@
       opts.reasons?.length ? el('ul', {}, opts.reasons.map((r) => el('li', { text: r }))) : null,
       opts.note ? el('p', { className: 'note', text: opts.note }) : null,
       buttons.length || opts.actions ? el('div', { className: 'actions' }, [...buttons, status]) : null,
+      details,
     ]));
     return ui;
   }
@@ -106,5 +127,22 @@
     return reply.result;
   }
 
-  WG.ui = { banner, chip, send };
+  // A "Why?" button that asks the campus server for a plain-language explanation.
+  // buildRequest() → { kind: 'email' | 'website', signals: [{ reason, severity }], ...minimal context }
+  function explainAction(buildRequest) {
+    return {
+      label: 'Why?',
+      onClick: async (ui) => {
+        ui.setStatus('Explaining…');
+        try {
+          ui.showExplanation(await send('explain', { request: buildRequest() }));
+          ui.setStatus('');
+        } catch (err) {
+          ui.setStatus(`Couldn't explain: ${err.message}`, true);
+        }
+      },
+    };
+  }
+
+  WG.ui = { banner, chip, send, explainAction };
 })();
