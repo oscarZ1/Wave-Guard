@@ -8,7 +8,7 @@ const $ = (id) => document.getElementById(id);
 const WARNING_PAGE = chrome.runtime.getURL('src/pages/warning.html');
 
 const STATUS_TEXT = {
-  clean: 'No reports from Pepperdine users',
+  clean: 'No warnings from Pepperdine users',
   warn: 'Reported as phishing by a Pepperdine user',
   block: 'Blocked by Pepperdine IT',
   unknown: "Can't reach the campus server",
@@ -69,10 +69,13 @@ $('report').addEventListener('click', async () => {
   result.className = 'result';
   result.textContent = 'Sending report…';
   try {
-    await send('report', { report: { url: reported, reason: 'Reported from the WaveGuard panel' } });
+    const { shared = true } = await send('report', { report: { url: reported, reason: 'Reported from the WaveGuard panel' } });
     result.className = 'result ok';
-    result.textContent = 'Thanks! Everyone at Pepperdine using WaveGuard will now be warned about this site.';
-    showStatus(reported, refreshSeq);
+    // shared is false when triage holds the report for IT (older servers don't send it).
+    result.textContent = shared
+      ? 'Thanks! Everyone at Pepperdine using WaveGuard will now be warned about this site.'
+      : 'Thanks! Pepperdine IT will review this site. Everyone is warned once IT agrees or someone else reports it too.';
+    if (shared) showStatus(reported, refreshSeq);
   } catch (err) {
     result.className = 'result error';
     result.textContent = `Report failed: ${err.message}`;

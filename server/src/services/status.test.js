@@ -25,3 +25,20 @@ test('IT actions map to statuses', () => {
   assert.equal(statusForDecision('dismiss'), 'dismissed');
   assert.equal(statusForDecision('delete'), null);
 });
+
+test('held-back reports stay pending until shared', () => {
+  assert.equal(computeStatus({ current: undefined, distinctReporters: 1, isKnownDomain: false, shareWithCommunity: false }), 'pending');
+  assert.equal(computeStatus({ current: 'pending', distinctReporters: 2, isKnownDomain: false, shareWithCommunity: true }), 'warn');
+});
+
+test('a shared entry is never pulled back to pending', () => {
+  assert.equal(computeStatus({ current: 'warn', distinctReporters: 1, isKnownDomain: false, shareWithCommunity: false }), 'warn');
+});
+
+test('three reporters still block, even while held back', () => {
+  assert.equal(computeStatus({ current: 'pending', distinctReporters: 3, isKnownDomain: false, shareWithCommunity: false }), 'block');
+});
+
+test('IT can share a held-back entry', () => {
+  assert.equal(statusForDecision('share'), 'warn');
+});

@@ -4,7 +4,7 @@ import StatTile from './components/StatTile.jsx';
 import BlocklistTable from './components/BlocklistTable.jsx';
 import ReportFeed from './components/ReportFeed.jsx';
 
-const STATUS_ORDER = { warn: 0, block: 1, dismissed: 2 };
+const STATUS_ORDER = { pending: 0, warn: 1, block: 2, dismissed: 3 };
 const FRESH_MS = 6000;
 
 // Nest reported links under their website entry, so each row is one thing IT decides on.
@@ -79,8 +79,11 @@ export default function App() {
   }
 
   const stats = data?.stats ?? {};
-  const awaiting = items.filter((i) => i.status === 'warn').length;
+  const held = items.filter((i) => i.status === 'pending').length;
+  const warning = items.filter((i) => i.status === 'warn').length;
   const blocked = items.filter((i) => i.status === 'block').length;
+  const shareAfter = data?.triage?.shareAfterReporters ?? 2;
+  const blockAfter = data?.triage?.autoBlockReporters ?? 3;
 
   return (
     <div className="page">
@@ -99,7 +102,7 @@ export default function App() {
 
       <div className="kpis">
         <StatTile hero label="Users protected" value={stats.users_protected} caption="Times WaveGuard stopped someone before a reported site loaded" />
-        <StatTile label="Awaiting IT review" value={awaiting} caption="Warning users now" />
+        <StatTile label="Awaiting IT review" value={held + warning} caption={`${warning} warning users, ${held} held for review`} />
         <StatTile label="Blocked" value={blocked} caption="Confirmed phishing" />
         <StatTile label="Reports received" value={stats.reports} caption={`${Number(stats.continued_anyway ?? 0).toLocaleString()} clicked "Continue anyway"`} />
       </div>
@@ -107,7 +110,11 @@ export default function App() {
       <div className="columns">
         <section className="card">
           <h2>Reported sites and senders</h2>
-          <p className="card-sub">One report warns everyone. Three people, or your confirmation, blocks it. Confirming a website also blocks every reported link on it.</p>
+          <p className="card-sub">
+            A report warns everyone right away only if WaveGuard's own checks agree it's phishing. Otherwise it waits here
+            until {shareAfter} people report it or you choose Warn everyone. {blockAfter} people, or your confirmation,
+            blocks it. Confirming a website also blocks every reported link on it.
+          </p>
           {data ? (
             <BlocklistTable items={items} onDecide={onDecide} busyId={busyId} now={now} freshIds={freshRows} />
           ) : <p className="empty">Loading…</p>}
