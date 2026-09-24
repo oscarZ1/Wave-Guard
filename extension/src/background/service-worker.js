@@ -3,7 +3,7 @@
 // kept in module variables. The worker is killed when idle, so state goes in chrome.storage.
 import { checkUrl, warningPageUrl } from './navigation.js';
 import { submitReport } from './report.js';
-import { analyzeInbox, checkPage } from './analyze.js';
+import { analyzeInbox, checkPage, domainAge, linkInfo } from './analyze.js';
 import { api, postEvent } from './api.js';
 import {
   allowOnce, clearAllow, getReporterId, isAllowed, refreshKnownDomains, setReporterId,
@@ -113,6 +113,8 @@ const HANDLERS = {
   // Plain-language explanation (the server calls Claude; the extension never holds a key).
   explain: ({ request }) => api('/api/explain', { method: 'POST', body: request, timeoutMs: 35_000 }),
   checkPage: ({ url }) => checkPage(url),
+  linkInfo: ({ text, href }) => linkInfo(String(text ?? '').slice(0, 300), href),
+  domainAge: ({ text, href }) => domainAge(String(text ?? '').slice(0, 300), href),
 
   pageLoaded: ({ url, referrer }, sender) => {
     if (sender.tab?.id == null || sender.frameId !== 0 || !isWebUrl(url)) return null;

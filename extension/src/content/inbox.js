@@ -60,11 +60,10 @@
     });
     adapter.insertBanner(msg, banner.host);
 
-    // Mark risky links and show where they really go on hover.
+    // Mark risky links (hover.js shows where they really go).
     for (const flagged of analysis.flaggedLinks) {
       const link = msg.links[flagged.index]?.el;
       if (!link) continue;
-      link.title = `WaveGuard: this link really goes to ${flagged.realHost}`;
       link.style.outline = '2px dashed #c62828';
       link.style.outlineOffset = '2px';
     }

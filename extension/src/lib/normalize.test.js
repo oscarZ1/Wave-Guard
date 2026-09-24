@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { canonicalizeUrl, registrableDomain, hostnameOf, subdomainPart, isIpAddress } from './normalize.js';
+import { canonicalizeUrl, registrableDomain, hostnameOf, subdomainPart, isIpAddress, hostingPlatformOf, isPublicHost } from './normalize.js';
 
 test('canonicalizeUrl drops scheme, fragment and default port, lowercases host', () => {
   assert.equal(canonicalizeUrl('HTTPS://Login.Example.COM:443/a/b?x=1#frag'), 'login.example.com/a/b?x=1');
@@ -41,4 +41,20 @@ test('hostnameOf, subdomainPart and isIpAddress', () => {
   assert.equal(subdomainPart('evil.com'), '');
   assert.ok(isIpAddress('10.0.0.1'));
   assert.ok(!isIpAddress('pepperdine.edu'));
+});
+
+test('hostingPlatformOf spots free hosting platforms only', () => {
+  assert.equal(hostingPlatformOf('pepperdine-login.github.io'), 'github.io');
+  assert.equal(hostingPlatformOf('a.b.web.app'), 'web.app');
+  assert.equal(hostingPlatformOf('github.io'), null);
+  assert.equal(hostingPlatformOf('www.bbc.co.uk'), null);
+  assert.equal(hostingPlatformOf('evil.com'), null);
+});
+
+test('isPublicHost excludes local, reserved and IP addresses', () => {
+  assert.ok(isPublicHost('google.com'));
+  assert.ok(isPublicHost('login.evil.co.uk'));
+  for (const h of ['localhost', 'mail.localhost', 'pepperdine-sso-login.test', 'printer.local', '10.0.0.1', 'intranet', '', null]) {
+    assert.equal(isPublicHost(h), false, String(h));
+  }
 });

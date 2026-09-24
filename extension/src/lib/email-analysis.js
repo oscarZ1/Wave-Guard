@@ -2,22 +2,14 @@
 // Pure: the service worker does the I/O (directory lookup, hash checks) and passes results in.
 import { SEVERITY_RANK } from './result.js';
 import { checkSenderImpersonation } from './sender.js';
-import { checkLinkMismatch } from './link-mismatch.js';
 import { checkBrandInWrongPlace } from './brand.js';
 import { checkLookalike } from './lookalike.js';
-import { hostnameOf } from './normalize.js';
-import { decodeHost } from './homoglyphs.js';
+import { analyzeLink } from './link-analysis.js';
 import { DEFAULT_KNOWN_DOMAINS } from './known-domains.js';
 
-const REPORTED_REASON = {
-  link: {
-    warn: 'Another Pepperdine user reported this link as phishing.',
-    block: 'Pepperdine IT confirmed this link is phishing.',
-  },
-  sender: {
-    warn: 'Other Pepperdine users reported this sender as phishing.',
-    block: 'Pepperdine IT confirmed this sender sends phishing.',
-  },
+const REPORTED_SENDER_REASON = {
+  warn: 'Other Pepperdine users reported this sender as phishing.',
+  block: 'Pepperdine IT confirmed this sender sends phishing.',
 };
 
 // email: { senderName, senderEmail, links: [{ text, href }] }
@@ -46,27 +38,16 @@ export function analyzeEmail(email, context = {}) {
   }
   const senderStatus = context.senderStatus;
   if (senderStatus === 'warn' || senderStatus === 'block') {
-    add('reported-sender', { triggered: true, severity: 'high', reason: REPORTED_REASON.sender[senderStatus] });
+    add('reported-sender', { triggered: true, severity: 'high', reason: REPORTED_SENDER_REASON[senderStatus] });
   }
 
   // Links
   const flaggedLinks = [];
   (email.links ?? []).forEach((link, index) => {
-    const before = findings.length;
-    add('link-mismatch', checkLinkMismatch(link.text, link.href), { link: index });
-    const host = hostnameOf(link.href);
-    if (host) {
-      const brand = checkBrandInWrongPlace(link.href, knownDomains);
-      add('link-brand', brand, { link: index });
-      if (!brand.triggered) add('link-lookalike', checkLookalike(host, knownDomains), { link: index });
-    }
-    const status = context.linkStatuses?.[index];
-    if (status === 'warn' || status === 'block') {
-      add('reported-link', { triggered: true, severity: 'high', reason: REPORTED_REASON.link[status] }, { link: index });
-    }
-    if (findings.length > before && host) {
-      flaggedLinks.push({ index, realHost: decodeHost(host), reasons: findings.slice(before).map((f) => f.reason) });
-    }
+    const info = analyzeLink(link, { knownDomains, status: context.linkStatuses?.[index] });
+    if (!info?.findings.length) return;
+    for (const f of info.findings) findings.push({ ...f, link: index });
+    flaggedLinks.push({ index, realHost: info.host, reasons: info.findings.map((f) => f.reason) });
   });
 
   // One finding per distinct reason, most severe first.

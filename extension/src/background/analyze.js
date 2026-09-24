@@ -2,9 +2,11 @@
 // then hands everything to the pure analyzers in lib/.
 import { analyzeEmail } from '../lib/email-analysis.js';
 import { analyzePage } from '../lib/page-analysis.js';
+import { analyzeLink } from '../lib/link-analysis.js';
+import { hostnameOf } from '../lib/normalize.js';
 import { hashesForUrl, hashEmail } from '../lib/hash.js';
 import { api } from './api.js';
-import { lookupHashes, worstStatus } from './navigation.js';
+import { checkUrl, lookupHashes, worstStatus } from './navigation.js';
 import { getKnownDomains } from './storage.js';
 
 async function lookupDirectory(names) {
@@ -49,4 +51,19 @@ export async function analyzeInbox(emails) {
 
 export async function checkPage(url) {
   return analyzePage(url, await getKnownDomains());
+}
+
+// Hover tooltip: local checks plus the hash-prefix report check (nothing readable leaves the browser).
+export async function linkInfo(text, href) {
+  const [knownDomains, reported] = await Promise.all([getKnownDomains(), checkUrl(href)]);
+  return analyzeLink({ text, href }, { knownDomains, status: reported.status });
+}
+
+// Registration date for a link's domain. Privacy rule, enforced here rather than trusted
+// from the page: the plaintext domain goes to the server only if the link is already flagged.
+export async function domainAge(text, href) {
+  const info = await linkInfo(text, href);
+  if (!info || info.verdict === 'safe') return { status: 'skipped' };
+  return api(`/api/domain-info?domain=${encodeURIComponent(hostnameOf(href))}`, { timeoutMs: 8000 })
+    .catch(() => ({ status: 'unavailable' }));
 }

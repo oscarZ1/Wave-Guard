@@ -34,6 +34,7 @@
         "src/content/banner.js",
         "src/content/adapters/mock-inbox.js",
         "src/content/inbox.js",
+        "src/content/hover.js",
         "src/content/main.js"
       ],
       "run_at": "document_idle"

@@ -1,15 +1,22 @@
 // URL and hostname normalization shared by the extension and the server.
 // Pure functions only: no Chrome APIs, so Node can test them.
 
-// Public suffixes with two labels, plus free-hosting platforms where each
-// subdomain belongs to a different person (so reporting one must not block all).
-const MULTI_LABEL_SUFFIXES = new Set([
+// Two-label public suffixes: the domain someone registers sits one label below these.
+const COUNTRY_SUFFIXES = new Set([
   'co.uk', 'ac.uk', 'org.uk', 'gov.uk', 'com.au', 'edu.au', 'co.nz', 'co.jp',
   'co.in', 'com.br', 'com.mx', 'com.cn',
+]);
+
+// Free hosting platforms: each subdomain belongs to a different person, so reporting
+// one must not block all, and the platform's own registration date says nothing about it.
+const HOSTING_PLATFORMS = new Set([
   'github.io', 'gitlab.io', 'web.app', 'firebaseapp.com', 'pages.dev', 'workers.dev',
   'vercel.app', 'netlify.app', 'herokuapp.com', 'glitch.me', 'repl.co',
   'blogspot.com', 'wixsite.com', 'weebly.com', 'azurewebsites.net', 'ngrok.io', 'ngrok-free.app',
 ]);
+
+// Reserved names that never exist on the public internet.
+const LOCAL_TLDS = new Set(['localhost', 'test', 'local', 'example', 'invalid', 'internal', 'lan', 'home']);
 
 export function parseHttpUrl(input) {
   if (typeof input !== 'string' || input.length > 4096) return null;
@@ -52,7 +59,7 @@ export function registrableDomain(host) {
   const labels = h.split('.').filter(Boolean);
   if (labels.length <= 2) return labels.join('.');
   const lastTwo = labels.slice(-2).join('.');
-  return MULTI_LABEL_SUFFIXES.has(lastTwo) ? labels.slice(-3).join('.') : lastTwo;
+  return COUNTRY_SUFFIXES.has(lastTwo) || HOSTING_PLATFORMS.has(lastTwo) ? labels.slice(-3).join('.') : lastTwo;
 }
 
 // "pepperdlne.edu" → "pepperdlne"; "evil.co.uk" → "evil".
@@ -66,4 +73,19 @@ export function subdomainPart(host) {
   const h = cleanHost(host);
   const reg = registrableDomain(h);
   return h === reg ? '' : h.slice(0, -(reg.length + 1));
+}
+
+// "evil.github.io" → "github.io"; null when the host isn't on a free hosting platform.
+export function hostingPlatformOf(host) {
+  const labels = cleanHost(host).split('.');
+  const lastTwo = labels.slice(-2).join('.');
+  return labels.length >= 3 && HOSTING_PLATFORMS.has(lastTwo) ? lastTwo : null;
+}
+
+// False for localhost, reserved test TLDs, IP addresses and single-label names.
+export function isPublicHost(host) {
+  if (!host) return false;
+  const h = cleanHost(host);
+  if (isIpAddress(h) || !h.includes('.')) return false;
+  return !LOCAL_TLDS.has(h.split('.').pop());
 }
